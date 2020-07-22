@@ -7,7 +7,6 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
-import org.protege.editor.owl.ui.renderer.OWLObjectRendererDLSyntax;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -31,7 +30,9 @@ import org.slf4j.LoggerFactory;
 public class RolesVisitor implements OWLClassExpressionVisitor {
 	private OWLClass cls = null;
 	private OWLOntology ont = null;
+	
 	private boolean local = true;
+	private int non_local = 0;
 	private boolean first = true;
 	
 	public boolean errors = false;
@@ -52,6 +53,7 @@ public class RolesVisitor implements OWLClassExpressionVisitor {
 		this.cls = e;
 		roles = new ArrayList<OWLObjectSomeValuesFrom>();
 		local = loc;
+		non_local = 0;
 		first = true;
 		
 		errors = false;
@@ -81,7 +83,7 @@ public class RolesVisitor implements OWLClassExpressionVisitor {
 				}
 			}
 		} else if (!ce.equals(cls) && !local) {
-			cur_ax = null;
+			non_local++;
 			for (OWLSubClassOfAxiom ax : ont.getSubClassAxiomsForSubClass(ce)) {
 				OWLClassExpression exp = ax.getSuperClass();
 				exp.accept(this);				
@@ -96,6 +98,7 @@ public class RolesVisitor implements OWLClassExpressionVisitor {
 
 				}
 			}
+			non_local--;
 		}
 	}
 
@@ -172,14 +175,15 @@ public class RolesVisitor implements OWLClassExpressionVisitor {
     }
     
     private void processUnsupportedExp(OWLClassExpression exp) {
-
-    	if (cur_ax != null) {
+    	if (non_local > 0) { 
+    	} else {
     		log.info("Class: {} Expression Not Supported: {}", cls.getIRI().getFragment(), printExpression(exp));
     		errors = true;    		
     		this.bad_constructs.add(cur_ax);
     		cur_ax = null;
+
+    		doDefault(exp);
     	}
-        doDefault(exp);
     }
 	
 	private String printExpression(OWLClassExpression exp) {
