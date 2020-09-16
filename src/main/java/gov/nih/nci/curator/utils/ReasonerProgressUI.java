@@ -46,8 +46,6 @@ public class ReasonerProgressUI implements ReasonerProgressMonitor, Disposable, 
 
 	private JDialog window;
 
-	private Action cancelledAction;
-
 	private boolean taskIsRunning = false;
 
 	private int last_percent = 0;
@@ -64,45 +62,28 @@ public class ReasonerProgressUI implements ReasonerProgressMonitor, Disposable, 
 		if (window != null)
 			return;		
 		JPanel panel = new JPanel(new BorderLayout(PADDING, PADDING));
-		panel.add(progressBar, BorderLayout.SOUTH);
+		panel.add(progressBar);
 		taskLabel = new JLabel(DEFAULT_MESSAGE);
 		panel.add(taskLabel, BorderLayout.NORTH);
 		Frame parent = (Frame) (SwingUtilities.getAncestorOfClass(Frame.class,
 				panel));
 		
 		window = new JDialog(parent, "Reasoner progress");
-		cancelledAction = new AbstractAction("Cancel") {
-			private static final long serialVersionUID = 3688085823398242640L;
-			public void actionPerformed(ActionEvent e) {
-				setCancelled();
-			}
-		};
-		JButton cancelledButton = new JButton(cancelledAction);
-		JPanel buttonHolder = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-		buttonHolder.add(cancelledButton);
+		window.setAlwaysOnTop(true);
+		window.setModalityType(ModalityType.APPLICATION_MODAL);
+	
 
 		JPanel holderPanel = new JPanel(new BorderLayout(PADDING, PADDING));
 		holderPanel.add(panel, BorderLayout.NORTH);
-		holderPanel.add(buttonHolder, BorderLayout.SOUTH);
 
 		holderPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 		window.getContentPane().setLayout(new BorderLayout());
-		window.getContentPane().add(holderPanel, BorderLayout.NORTH);
+		window.getContentPane().add(holderPanel);
 		window.pack();
 		Dimension windowSize = window.getPreferredSize();
 		window.setSize(400, windowSize.height);
-		window.setResizable(false);	
 		
-	}
-
-	public void setCancelled() {
-		initWindow();
-		taskLabel
-		.setText("Cancelled.  Waiting for reasoner to terminate...");
-		cancelledAction.setEnabled(false);
-		//owlEditorKit.getOWLModelManager().getOWLReasonerManager()
-		//.killCurrentClassification();
 	}
 
 	public void reasonerTaskBusy() {
@@ -178,7 +159,7 @@ public class ReasonerProgressUI implements ReasonerProgressMonitor, Disposable, 
 		taskLabel.setText(message);
 		if (window.isVisible())
 			return;
-		cancelledAction.setEnabled(true);
+		//cancelledAction.setEnabled(true);
 		window.setLocationRelativeTo(window.getOwner());
 		window.setVisible(true);
 	}
