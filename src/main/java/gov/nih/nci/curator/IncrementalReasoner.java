@@ -136,8 +136,10 @@ public class IncrementalReasoner implements OWLReasoner {
         }
 
 		Set<Node<OWLClass>> values = new HashSet<Node<OWLClass>>();
-		for( Set<OWLClass> val : taxonomy.getSubs( (OWLClass) clsC, direct ) ) {
-			values.add( NodeFactory.getOWLClassNode( val ) );
+		if ( taxonomy != null ) {
+			for( Set<OWLClass> val : taxonomy.getSubs( (OWLClass) clsC, direct ) ) {
+				values.add( NodeFactory.getOWLClassNode( val ) );
+			}
 		}
 
 		return new OWLClassNodeSet( values );
@@ -490,8 +492,10 @@ public class IncrementalReasoner implements OWLReasoner {
 		//classify();
 
 		Set<Node<OWLClass>> values = new HashSet<Node<OWLClass>>();
-		for( Set<OWLClass> val : taxonomy.getSupers( (OWLClass) ce, direct ) ) {
-			values.add( NodeFactory.getOWLClassNode( val ) );
+		if (taxonomy != null) {
+			for( Set<OWLClass> val : taxonomy.getSupers( (OWLClass) ce, direct ) ) {
+				values.add( NodeFactory.getOWLClassNode( val ) );
+			}
 		}
 
 		return new OWLClassNodeSet( values );
