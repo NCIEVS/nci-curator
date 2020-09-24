@@ -15,7 +15,7 @@ import java.io.IOException;
 
 import org.semanticweb.owlapi.model.OWLClass;
 
-import gov.nih.nci.curator.owlapiv3.KnowledgeBase;
+import gov.nih.nci.curator.owlapi.KnowledgeBase;
 import gov.nih.nci.curator.taxonomy.printer.ClassTreePrinter;
 import gov.nih.nci.curator.taxonomy.printer.TaxonomyPrinter;
 

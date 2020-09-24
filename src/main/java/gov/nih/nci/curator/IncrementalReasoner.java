@@ -46,8 +46,8 @@ import org.semanticweb.owlapi.reasoner.impl.OWLClassNodeSet;
 import org.semanticweb.owlapi.reasoner.impl.OWLNamedIndividualNodeSet;
 import org.semanticweb.owlapi.util.Version;
 
-import gov.nih.nci.curator.owlapiv3.NCICurator;
-import gov.nih.nci.curator.owlapiv3.OWL;
+import gov.nih.nci.curator.owlapi.NCICurator;
+import gov.nih.nci.curator.owlapi.OWL;
 import gov.nih.nci.curator.taxonomy.Taxonomy;
 import gov.nih.nci.curator.taxonomy.printer.TreeTaxonomyPrinter;
 import gov.nih.nci.curator.utils.Timer;

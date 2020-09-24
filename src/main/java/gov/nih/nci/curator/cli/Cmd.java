@@ -25,9 +25,9 @@ import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import gov.nih.nci.curator.CuratorOptions;
-import gov.nih.nci.curator.owlapiv3.KBLoader;
-import gov.nih.nci.curator.owlapiv3.KnowledgeBase;
-import gov.nih.nci.curator.owlapiv3.OWLAPILoader;
+import gov.nih.nci.curator.owlapi.KBLoader;
+import gov.nih.nci.curator.owlapi.KnowledgeBase;
+import gov.nih.nci.curator.owlapi.OWLAPILoader;
 import gov.nih.nci.curator.utils.Timer;
 import gov.nih.nci.curator.utils.Timers;
 

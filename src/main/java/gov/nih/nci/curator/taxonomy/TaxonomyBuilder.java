@@ -36,7 +36,7 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLClass;
 
-import gov.nih.nci.curator.owlapiv3.KnowledgeBase;
+import gov.nih.nci.curator.owlapi.KnowledgeBase;
 import gov.nih.nci.curator.utils.progress.ProgressMonitor;
 
 /**

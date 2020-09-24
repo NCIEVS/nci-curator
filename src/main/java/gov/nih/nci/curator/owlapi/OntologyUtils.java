@@ -4,7 +4,7 @@
 // Please see LICENSE.txt for full license terms, including the availability of proprietary exceptions.
 // Questions, comments, or requests for clarification: licensing@clarkparsia.com
 
-package gov.nih.nci.curator.owlapiv3;
+package gov.nih.nci.curator.owlapi;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;

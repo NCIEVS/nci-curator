@@ -17,8 +17,8 @@ import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 
-import gov.nih.nci.curator.owlapiv3.NCICurator;
-import gov.nih.nci.curator.owlapiv3.NCICuratorConfig;
+import gov.nih.nci.curator.owlapi.NCICurator;
+import gov.nih.nci.curator.owlapi.NCICuratorConfig;
 
 
 

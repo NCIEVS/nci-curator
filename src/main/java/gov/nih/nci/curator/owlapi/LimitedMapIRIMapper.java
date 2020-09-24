@@ -1,4 +1,4 @@
-package gov.nih.nci.curator.owlapiv3;
+package gov.nih.nci.curator.owlapi;
 
 import java.util.HashMap;
 import java.util.Map;

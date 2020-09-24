@@ -6,7 +6,7 @@
 // proprietary exceptions.
 // Questions, comments, or requests for clarification: licensing@clarkparsia.com
 
-package gov.nih.nci.curator.owlapiv3;
+package gov.nih.nci.curator.owlapi;
 
 
 import org.semanticweb.owlapi.apibinding.OWLManager;

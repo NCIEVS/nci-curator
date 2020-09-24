@@ -22,8 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import gov.nih.nci.curator.CuratorOptions;
-import gov.nih.nci.curator.owlapiv3.KnowledgeBase;
-import gov.nih.nci.curator.owlapiv3.OWL;
+import gov.nih.nci.curator.owlapi.KnowledgeBase;
+import gov.nih.nci.curator.owlapi.OWL;
 import gov.nih.nci.curator.utils.Comparators;
 import gov.nih.nci.curator.utils.progress.ProgressMonitor;
 import gov.nih.nci.curator.utils.progress.SilentProgressMonitor;

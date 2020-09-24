@@ -27,8 +27,8 @@ import org.jgrapht.graph.DefaultEdge;
 
 import org.semanticweb.owlapi.model.OWLClass;
 
-import gov.nih.nci.curator.owlapiv3.KnowledgeBase;
-import gov.nih.nci.curator.owlapiv3.OWL;
+import gov.nih.nci.curator.owlapi.KnowledgeBase;
+import gov.nih.nci.curator.owlapi.OWL;
 import gov.nih.nci.curator.utils.CollectionUtils;
 
 

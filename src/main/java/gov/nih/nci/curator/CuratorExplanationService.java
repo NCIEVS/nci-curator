@@ -6,7 +6,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
-import gov.nih.nci.curator.owlapiv3.NCICurator;
+import gov.nih.nci.curator.owlapi.NCICurator;
 
 import org.protege.editor.core.ui.list.MListButton;
 import org.protege.editor.core.ui.list.MListItem;

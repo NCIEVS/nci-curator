@@ -1,4 +1,4 @@
-package gov.nih.nci.curator.owlapiv3;
+package gov.nih.nci.curator.owlapi;
 
 import java.io.PrintWriter;
 import java.util.Set;

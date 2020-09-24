@@ -14,8 +14,8 @@ import java.util.Set;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 
-import gov.nih.nci.curator.owlapiv3.KnowledgeBase;
-import gov.nih.nci.curator.owlapiv3.OWL;
+import gov.nih.nci.curator.owlapi.KnowledgeBase;
+import gov.nih.nci.curator.owlapi.OWL;
 
 
 
