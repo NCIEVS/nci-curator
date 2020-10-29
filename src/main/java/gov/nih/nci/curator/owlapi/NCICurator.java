@@ -61,6 +61,7 @@ import org.semanticweb.owlapi.reasoner.impl.OWLObjectPropertyNode;
 import org.semanticweb.owlapi.reasoner.impl.OWLObjectPropertyNodeSet;
 import org.semanticweb.owlapi.util.Version;
 
+import gov.nih.nci.curator.utils.ReasonerProgressUI;
 import gov.nih.nci.curator.utils.VersionInfo;
 
 
@@ -215,8 +216,8 @@ public class NCICurator extends AbstractOWLListeningReasoner {
 
 		setListenChanges(config.isListenChanges());
 
-		monitor = config.getProgressMonitor();
-		//monitor = new ReasonerProgressUI();
+		//monitor = config.getProgressMonitor();
+		monitor = new ReasonerProgressUI();
 		
 		kb = new KnowledgeBase(ontology);
 		kb.setTaxonomyBuilderProgressMonitor( new ProgressAdapter( monitor ) );

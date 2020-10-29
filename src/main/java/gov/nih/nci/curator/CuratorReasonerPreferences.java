@@ -27,7 +27,9 @@ public class CuratorReasonerPreferences {
         // Class Property Inferences
         CHECK_REDUNDANT_PARENT(false),
         CHECK_DISJOINT_CLASSES(false),
-    	CHECK_UNSUPPORTED_CONSTRUCTS(false);
+    	CHECK_UNSUPPORTED_CONSTRUCTS(false),
+    	CHECK_SUBCLASS_FULL_DEFINED(false),
+    	CHECK_BAD_RETREE(false);
 
         private boolean enabledByDefault;
 

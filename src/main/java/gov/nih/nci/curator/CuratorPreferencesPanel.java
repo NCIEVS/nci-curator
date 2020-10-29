@@ -83,6 +83,10 @@ public class CuratorPreferencesPanel extends OWLPreferencesPanel {
         		"Check Redundant Parent"));
         layoutPanel.addGroupComponent(getCheckBox(CuratorReasonerPreferences.OptionalEditChecksTask.CHECK_UNSUPPORTED_CONSTRUCTS, 
         		"Check Unsupported Language Constructs"));
+        layoutPanel.addGroupComponent(getCheckBox(CuratorReasonerPreferences.OptionalEditChecksTask.CHECK_SUBCLASS_FULL_DEFINED, 
+        		"Check Defined Class has no subclass"));
+        layoutPanel.addGroupComponent(getCheckBox(CuratorReasonerPreferences.OptionalEditChecksTask.CHECK_BAD_RETREE, 
+        		"Check retree to disjoint domain has no references"));
 	}
 
 	private Border createTitledBorder(JPanel panel, String title) {

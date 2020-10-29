@@ -33,13 +33,15 @@ public class RolesVisitor implements OWLClassExpressionVisitor {
 	
 	private boolean local = true;
 	private int non_local = 0;
-	private boolean first = true;
+	//private boolean first = true;
 	
 	public boolean errors = false;
 	
 	private static final Logger log = LoggerFactory.getLogger(RolesVisitor.class);
 
 	public List<OWLObjectSomeValuesFrom> roles = new ArrayList<OWLObjectSomeValuesFrom>();
+	
+	private List<OWLClass> visited = new ArrayList<OWLClass>();
 	
 	public Set<OWLAxiom> bad_constructs = new HashSet<OWLAxiom>();
 	private OWLAxiom cur_ax = null;
@@ -51,10 +53,13 @@ public class RolesVisitor implements OWLClassExpressionVisitor {
 	
 	public void setEntity(OWLClass e, boolean loc) {
 		this.cls = e;
+		
 		roles = new ArrayList<OWLObjectSomeValuesFrom>();
+		visited = new ArrayList<OWLClass>();
+		
 		local = loc;
 		non_local = 0;
-		first = true;
+		//first = true;
 		
 		errors = false;
 		bad_constructs = new HashSet<OWLAxiom>();
@@ -63,43 +68,35 @@ public class RolesVisitor implements OWLClassExpressionVisitor {
 
 	@Override
 	public void visit(OWLClass ce) {
-		if (ce.equals(cls) && first) {
-			first = false;
+		if (visited.contains(ce)) {
 			
-			for (OWLSubClassOfAxiom ax : ont.getSubClassAxiomsForSubClass(cls)) {
-				OWLClassExpression exp = ax.getSuperClass();
-				cur_ax = ax;
-				exp.accept(this);				
+		} else {
+			visited.add(ce);
+			if (!ce.equals(cls)) {
+				non_local++;
 			}
-			for (OWLEquivalentClassesAxiom eax : ont.getEquivalentClassesAxioms(cls)) {
-				for (OWLClassExpression exp : eax.getClassExpressions()) {
-					if (exp.isOWLClass() && exp.asOWLClass().equals(cls)) {
+			if (ce.equals(cls) || !local) {
+				for (OWLSubClassOfAxiom ax : ont.getSubClassAxiomsForSubClass(ce)) {
+					OWLClassExpression exp = ax.getSuperClass();
+					cur_ax = ax;
+					exp.accept(this);				
+				}
+				for (OWLEquivalentClassesAxiom eax : ont.getEquivalentClassesAxioms(ce)) {
+					for (OWLClassExpression exp : eax.getClassExpressions()) {
+						if (exp.isOWLClass() && exp.asOWLClass().equals(ce)) {
 
-					} else {
-						cur_ax = eax;
-						exp.accept(this);
+						} else {
+							exp.accept(this);
+						}
+
 					}
-
 				}
 			}
-		} else if (!ce.equals(cls) && !local) {
-			non_local++;
-			for (OWLSubClassOfAxiom ax : ont.getSubClassAxiomsForSubClass(ce)) {
-				OWLClassExpression exp = ax.getSuperClass();
-				exp.accept(this);				
+			if (!ce.equals(cls)) {
+				non_local--;
 			}
-			for (OWLEquivalentClassesAxiom eax : ont.getEquivalentClassesAxioms(ce)) {
-				for (OWLClassExpression exp : eax.getClassExpressions()) {
-					if (exp.isOWLClass() && exp.asOWLClass().equals(ce)) {
-
-					} else {
-						exp.accept(this);
-					}
-
-				}
-			}
-			non_local--;
 		}
+		
 	}
 
 	@Override
