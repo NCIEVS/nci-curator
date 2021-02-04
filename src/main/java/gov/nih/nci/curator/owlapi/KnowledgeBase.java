@@ -34,6 +34,7 @@
 
 package gov.nih.nci.curator.owlapi;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -42,8 +43,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLAxiomChange;
@@ -58,7 +57,8 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
-import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //import gov.nih.nci.curator.taxonomy.CuratorBuilder;
 //import gov.nih.nci.curator.taxonomy.CuratorBuilder2;
@@ -72,12 +72,11 @@ import gov.nih.nci.curator.utils.Timer;
 import gov.nih.nci.curator.utils.Timers;
 import gov.nih.nci.curator.utils.UsagesVisitor;
 import gov.nih.nci.curator.utils.progress.ProgressMonitor;
-
 /**
  * @author Evren Sirin
  */
 public class KnowledgeBase {
-	public final static Logger log = Logger.getLogger(KnowledgeBase.class.getName());
+	public final static Logger log = LoggerFactory.getLogger(KnowledgeBase.class);
 
 	protected TaxonomyBuilder builder;
 	private ProgressMonitor builderProgressMonitor;
@@ -94,6 +93,8 @@ public class KnowledgeBase {
 	
 	private HashMap<OWLClass, Set<OWLAxiom>> bad_constructs;
 	
+	public Timers timers = new Timers();
+	
 	public Map<OWLClass, Set<OWLAxiom>> getBadConstructs() {
 		return bad_constructs;
 		
@@ -109,7 +110,7 @@ public class KnowledgeBase {
 
 	protected EnumSet<ReasoningState> state = EnumSet.noneOf(ReasoningState.class);
 
-	public Timers timers = new Timers();
+	
 
 	public boolean isClassified() {
 		return !isChanged() && state.contains(ReasoningState.CLASSIFY);
@@ -132,11 +133,8 @@ public class KnowledgeBase {
 	 * 
 	 */
 	public KnowledgeBase(OWLOntology o) {
+		
 		clear();
-
-		timers.createTimer("preprocessing");
-		timers.createTimer("consistency");
-		timers.createTimer("complete");
 		state = EnumSet.noneOf(ReasoningState.class);
 
 		ont = o;
@@ -147,10 +145,8 @@ public class KnowledgeBase {
 		root_visitor = new RootVisitor(null, ont);
 		spar_visitor = new StatedParentVisitor(null, ont);
 		
-		role_map = new HashMap<OWLClass, List<OWLObjectSomeValuesFrom>>();
-		
-		loc_role_map = new HashMap<OWLClass, List<OWLObjectSomeValuesFrom>>();
-		
+		role_map = new HashMap<OWLClass, List<OWLObjectSomeValuesFrom>>();		
+		loc_role_map = new HashMap<OWLClass, List<OWLObjectSomeValuesFrom>>();		
 		bad_constructs = new HashMap<OWLClass, Set<OWLAxiom>>();
 
 	}
@@ -158,16 +154,16 @@ public class KnowledgeBase {
 	public void clear() {
 
 		builder = null;
+		
+		timers = new Timers();
 
 		state.clear();
 		changes = new HashSet<OWLAxiomChange>();
 		
-		role_map = new HashMap<OWLClass, List<OWLObjectSomeValuesFrom>>();
-		
-		loc_role_map = new HashMap<OWLClass, List<OWLObjectSomeValuesFrom>>();
-		
 		role_errors = false;
 		
+		role_map = new HashMap<OWLClass, List<OWLObjectSomeValuesFrom>>();		
+		loc_role_map = new HashMap<OWLClass, List<OWLObjectSomeValuesFrom>>();		
 		bad_constructs = new HashMap<OWLClass, Set<OWLAxiom>>();
 	}
 
@@ -175,11 +171,13 @@ public class KnowledgeBase {
 
 		if (isClassified())
 			return;
+		
+		Timer timer = null;
+		
+		if (log.isDebugEnabled()) {
 
-		if (log.isLoggable(Level.FINE))
-			log.fine("Classifying...");
-
-		Timer timer = timers.startTimer("classify");
+			timer = timers.startTimer("classify");
+		}
 
 		builder = getTaxonomyBuilder();
 		
@@ -194,7 +192,15 @@ public class KnowledgeBase {
 
 			boolean isClassified = builder.classify();
 
-			timer.stop();
+			if (log.isDebugEnabled()) {
+				
+				timer.stop();
+				StringWriter sw = new StringWriter();
+				timers.print( sw, true, null );
+				log.info(sw.toString());
+			}
+			
+			
 
 			if (!isClassified)
 				return;

@@ -95,9 +95,9 @@ public class Classify extends Cmd {
 			
 		}
 
-		TaxonomyPrinter<OWLClass> printer = new ClassTreePrinter();
-		printer.print( kb.getTaxonomyBuilder().getTaxonomy() );
-		//System.out.println("time to classify " + end);
+		//TaxonomyPrinter<OWLClass> printer = new ClassTreePrinter();
+		//printer.print( kb.getTaxonomyBuilder().getTaxonomy() );
+		System.out.println("time to classify " + end);
 	}
 	
 	private boolean validateClassification(KnowledgeBase kb) {

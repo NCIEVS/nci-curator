@@ -8,13 +8,13 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 cd "$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-java -Xmx8000M -Xms2000M \
-     -Xss16M \
+java -Xmx8000M -Xms4000M \
+     -Xss64M \
      -Dlogback.configurationFile=conf/logback.xml \
      -DentityExpansionLimit=100000000 \
      -Dfile.encoding=UTF-8 \
-     -Dcurator.logging.level=error \
-     -classpath lib/*:target/nci-curator-0.0.1-SNAPSHOT.jar \
+     -Dcurator.logging.level=ERROR \
+     -classpath ../protege/protege-desktop/target/protege-5.1.2-SNAPSHOT-platform-independent/Protege-5.1.2-SNAPSHOT/lib/*:target/nci-curator-0.0.7-SNAPSHOT.jar \
      $CMD_OPTIONS gov.nih.nci.curator.cli.Curator classify --verbose $1
 
 

@@ -25,6 +25,7 @@ import gov.nih.nci.curator.CuratorOptions;
 import gov.nih.nci.curator.owlapi.KnowledgeBase;
 import gov.nih.nci.curator.owlapi.OWL;
 import gov.nih.nci.curator.utils.Comparators;
+import gov.nih.nci.curator.utils.Timer;
 import gov.nih.nci.curator.utils.progress.ProgressMonitor;
 import gov.nih.nci.curator.utils.progress.SilentProgressMonitor;
 
@@ -55,6 +56,27 @@ public class CuratorBuilder implements TaxonomyBuilder {
 	protected KnowledgeBase kb;
 	
 	private int cnt = 0;
+	
+	private Timer tim_lub;
+	private Timer tim_glb;
+	private Timer glb_red;
+	private Timer glb_sub;
+	private Timer lub_sub;
+	private Timer c_s_info;
+	private Timer def_ord;
+	private Timer fet_def_ord;
+	
+	private void startTimer(Timer tim) {
+		if (log.isDebugEnabled()) {
+			tim.start();
+		}
+	}
+	
+	private void stopTimer(Timer tim) {
+		if (log.isDebugEnabled()) {
+			tim.stop();
+		}
+	}
 	
 	class MyVisitOrder extends JGraphBasedDefinitionOrder {
 
@@ -125,6 +147,19 @@ public class CuratorBuilder implements TaxonomyBuilder {
 		monitor.setProgressTitle("Begin classification process....");
 		monitor.taskStarted();
 		
+		if (log.isDebugEnabled()) {
+			tim_lub = kb.timers.createTimer("lub");
+			tim_glb = kb.timers.createTimer("glb");
+			glb_sub = kb.timers.createTimer("glb_sub");
+			lub_sub = kb.timers.createTimer("lub_sub");
+			glb_red = kb.timers.createTimer("glb_red");
+			c_s_info = kb.timers.createTimer("compute stated info");
+			def_ord = kb.timers.createTimer("definition order");
+			fet_def_ord = kb.timers.createTimer("fetch def order");
+		}
+		
+		
+		
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
@@ -136,7 +171,9 @@ public class CuratorBuilder implements TaxonomyBuilder {
 			
 			monitor.setProgressTitle("Computing asserted information....");
 			
+			startTimer(c_s_info);
 			computeStatedInformation();
+			stopTimer(c_s_info);
 						
 		}		
 		
@@ -147,7 +184,9 @@ public class CuratorBuilder implements TaxonomyBuilder {
 		}
 		monitor.setProgressTitle("Topologically sort all terms....");
 		
+		startTimer(def_ord);		
 		class_visit_order = new MyVisitOrder(kb, Comparators.termComparator);
+		stopTimer(def_ord);
 				
 		classifyTaxonomy();
 				
@@ -270,11 +309,12 @@ public class CuratorBuilder implements TaxonomyBuilder {
 		monitor.setProgress(0);
 		cnt = 0;
 		
+		startTimer(fet_def_ord);
 		List<OWLClass> todo = class_visit_order.getDefinitionOrder();
+		stopTimer(fet_def_ord);
 		
 
-		
-		for (OWLClass c : todo) {
+	for (OWLClass c : todo) {
 			// check consistent parents
 			if (inheritsDisjointClasses(c)) {
 				taxonomy.addEquivalentNode(c, taxonomy.bottomNode);
@@ -302,7 +342,7 @@ public class CuratorBuilder implements TaxonomyBuilder {
 				monitor.setProgress(cnt);
 			}
 		}
-		
+				
 		monitor.setProgress(size);
 		
 		
@@ -326,7 +366,9 @@ public class CuratorBuilder implements TaxonomyBuilder {
 		
 		List<OWLObjectSomeValuesFrom> roles = kb.getRoles(c);
 
+		startTimer(tim_lub);
 		Set<OWLClass> lubs = reduce(findLubs(c, dom, getPrimitives(c), roles));
+		stopTimer(tim_lub);
 
 		// NOTE: any glb of the new class will by definition of subsumption be a subclass of all the lubs,
 		// so we only need conduct the glbs search starting from any one of them
@@ -335,7 +377,9 @@ public class CuratorBuilder implements TaxonomyBuilder {
 		
 		if (!lubs.isEmpty()) {
 			OWLClass root = lubs.iterator().next();
+			startTimer(tim_glb);
 			glbs = glb_reduce(findGlbs(c, root, getPrimitives(root), kb.getRoles(root)));
+			stopTimer(tim_glb);
 		}
 		
 
@@ -384,8 +428,9 @@ public class CuratorBuilder implements TaxonomyBuilder {
 			}
 		}
 		
-		
+		startTimer(lub_sub);
 		if (subsumes_p(root, c, prims, roles)) {
+			stopTimer(lub_sub);
 			// continue down
 			Set<OWLClass> subs = taxonomy.getFlattenedSubs(root, true);			
 
@@ -404,6 +449,8 @@ public class CuratorBuilder implements TaxonomyBuilder {
 			}
 
 
+		} else {
+			stopTimer(lub_sub);
 		}
 		
 		return lubs;
@@ -420,11 +467,18 @@ public class CuratorBuilder implements TaxonomyBuilder {
 			return glbs;
 		}
 			
+		startTimer(glb_sub);
 		if (glb_subsumes_p(c, root, prims, roles)) {
+			stopTimer(glb_sub);
 			glbs.add(root);
 		} else {
+			stopTimer(glb_sub);
 			
-			Set<OWLClass> subs = taxonomy.getFlattenedSubs(root, true);			
+			Set<OWLClass> subs = taxonomy.getFlattenedSubs(root, true);	
+			if ((subs.size() == 1) &&
+					subs.iterator().next().equals(OWL.Nothing)) {
+				return glbs;
+			}
 
 			for (OWLClass sub : subs) {					
 				Set<OWLClass> glbs_subs = findGlbs(c, sub, getPrimitives(sub), kb.getRoles(sub));
@@ -661,6 +715,7 @@ public class CuratorBuilder implements TaxonomyBuilder {
 	}
 	
 	Set<OWLClass> glb_reduce(Set<OWLClass> glbs) {
+		startTimer(glb_red);
 		Set<OWLClass> result = new HashSet<OWLClass>();
 		for (OWLClass sub : glbs) {
 			boolean found = false;
@@ -677,6 +732,7 @@ public class CuratorBuilder implements TaxonomyBuilder {
 				result.add(sub);
 			}
 		}
+		stopTimer(glb_red);
 		return result;
 	}	
 		

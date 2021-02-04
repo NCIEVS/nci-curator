@@ -10,8 +10,7 @@ import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 import javax.annotation.Nonnull;
 
@@ -45,6 +44,7 @@ import org.semanticweb.owlapi.reasoner.impl.NodeFactory;
 import org.semanticweb.owlapi.reasoner.impl.OWLClassNodeSet;
 import org.semanticweb.owlapi.reasoner.impl.OWLNamedIndividualNodeSet;
 import org.semanticweb.owlapi.util.Version;
+import org.slf4j.LoggerFactory;
 
 import gov.nih.nci.curator.owlapi.NCICurator;
 import gov.nih.nci.curator.owlapi.OWL;
@@ -73,7 +73,7 @@ import gov.nih.nci.curator.utils.Timers;
  * @author Evren Sirin
  */
 public class IncrementalReasoner implements OWLReasoner {
-	public static final Logger log = Logger.getLogger(IncrementalReasoner.class.getName());
+	public static final org.slf4j.Logger log = LoggerFactory.getLogger(IncrementalReasoner.class);
 	
 	public static long TIME_IN_INCR_CLASSIFIER = 0;
 
@@ -161,8 +161,8 @@ public class IncrementalReasoner implements OWLReasoner {
 	private Thread classy = null;
 
 	private void regularClassify() {
-		if( log.isLoggable( Level.FINE ) ) {
-	        log.fine( "Regular classification starting" );
+		if( log.isTraceEnabled()) {
+	        log.trace( "Regular classification starting" );
         }
 
 		classy = new Thread( "classification" ) {
@@ -174,8 +174,8 @@ public class IncrementalReasoner implements OWLReasoner {
 				timer.stop();
 				log.info("Classification took " + timer.getTotal() + " ms.");
 
-				if( log.isLoggable( Level.FINE ) ) {
-					log.fine( "Regular taxonomy:" );
+				if( log.isTraceEnabled()) {
+					log.trace( "Regular taxonomy:" );
 
 					new TreeTaxonomyPrinter<OWLClass>().print( reasoner.getKB().getTaxonomyBuilder().getTaxonomy(), new PrintWriter( System.err ) );
 				}
@@ -183,8 +183,8 @@ public class IncrementalReasoner implements OWLReasoner {
 				taxonomy = reasoner.getKB().getTaxonomyBuilder().getTaxonomy();
 				
 
-				if( log.isLoggable( Level.FINE ) ) {
-					log.fine( "Copied taxonomy:" );
+				if( log.isTraceEnabled()) {
+					log.trace( "Copied taxonomy:" );
 
 					new TreeTaxonomyPrinter<OWLClass>().print( taxonomy, new PrintWriter( System.err ) );
 				}
@@ -201,8 +201,8 @@ public class IncrementalReasoner implements OWLReasoner {
 			throw new RuntimeException( e );
 		}
 
-		if( log.isLoggable( Level.FINE ) ) {
-	        log.fine( "Regular classification done" );
+		if( log.isTraceEnabled()) {
+	        log.trace( "Regular classification done" );
         }
 	}
 

@@ -114,9 +114,9 @@ public class ReasonerProgressUI implements ReasonerProgressMonitor, Disposable, 
 				if (percent != last_percent) {
 					last_percent = percent;					
 					SwingUtilities.invokeLater(() -> {
-						System.out.print("    ");
-						System.out.print(percent);
-						System.out.println("%");
+						//System.out.print("    ");
+						//System.out.print(percent);
+						//System.out.println("%");
 						progressBar.setValue(value);
 
 					});
