@@ -31,7 +31,7 @@
     
    
     
-    <logger name="gov.nih.nci.curator" level="${curator.logging.level:-ERROR}">
+    <logger name="gov.nih.nci.curator" level="${curator.logging.level:-INFO}">
         <appender-ref ref="stdout"/>
     	<appender-ref ref="rolling-files"/>
     </logger>
