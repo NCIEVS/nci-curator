@@ -87,7 +87,7 @@ public class CuratorBuilder implements TaxonomyBuilder {
 		public List<OWLClass> getDefinitionOrder() {
 			List<OWLClass> domains = new ArrayList<OWLClass>();
 			for (OWLClass c : definitionOrder) {
-				if (c.equals(OWL.Thing) || c.equals(OWL.Nothing)) {				
+				if (c.isOWLThing() || c.isOWLNothing()) {				
 
 				} else {
 					domains.add(c);
@@ -417,7 +417,7 @@ public class CuratorBuilder implements TaxonomyBuilder {
 		Set<OWLClass> lubs = new HashSet<OWLClass>();
 		
 		
-		if (root.equals(OWL.Nothing)) {
+		if (root.isOWLNothing()) {
 			return lubs;
 		}
 		
@@ -463,7 +463,7 @@ public class CuratorBuilder implements TaxonomyBuilder {
 		Set<OWLClass> glbs = new HashSet<OWLClass>();
 		
 
-		if (root.equals(OWL.Nothing)) {
+		if (root.isOWLNothing()) {
 			return glbs;
 		}
 			
@@ -476,7 +476,7 @@ public class CuratorBuilder implements TaxonomyBuilder {
 			
 			Set<OWLClass> subs = taxonomy.getFlattenedSubs(root, true);	
 			if ((subs.size() == 1) &&
-					subs.iterator().next().equals(OWL.Nothing)) {
+					subs.iterator().next().isOWLNothing()) {
 				return glbs;
 			}
 
