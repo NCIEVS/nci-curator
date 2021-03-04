@@ -413,21 +413,21 @@ public class CuratorBuilder implements TaxonomyBuilder {
 	}
 	
 	private Set<OWLClass> findLubs(OWLClass c, OWLClass root, Set<OWLClass> prims, List<OWLObjectSomeValuesFrom> roles) {
-		
+
 		Set<OWLClass> lubs = new HashSet<OWLClass>();
-		
-		
+
+
 		if (root.isOWLNothing()) {
 			return lubs;
 		}
-		
+
 		if (isPrim(root)) {
 			//any primitive must be contained in the primitives that are supercs of the new concept
 			if (!prims.contains(root)) {
 				return lubs;
 			}
 		}
-		
+
 		startTimer(lub_sub);
 		if (subsumes_p(root, c, prims, roles)) {
 			stopTimer(lub_sub);
@@ -452,10 +452,10 @@ public class CuratorBuilder implements TaxonomyBuilder {
 		} else {
 			stopTimer(lub_sub);
 		}
-		
+
 		return lubs;
 	}
-	
+
 	private Set<OWLClass> findGlbs(OWLClass c, OWLClass root, 
 			Set<OWLClass> prims, List<OWLObjectSomeValuesFrom> roles) {
 
