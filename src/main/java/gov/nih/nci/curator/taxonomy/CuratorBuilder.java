@@ -468,7 +468,7 @@ public class CuratorBuilder implements TaxonomyBuilder {
 		}
 			
 		startTimer(glb_sub);
-		if (glb_subsumes_p(c, root, prims, roles)) {
+		if (subsumes_p(c, root, prims, roles)) {
 			stopTimer(glb_sub);
 			glbs.add(root);
 		} else {
@@ -535,8 +535,12 @@ public class CuratorBuilder implements TaxonomyBuilder {
 	private boolean subsumes_p(OWLClass sup, OWLClass sub, Set<OWLClass> prims, List<OWLObjectSomeValuesFrom> roles_sub) {
 		
 		if (isPrim(sup)) {
-			cacheSupercOf(sup, sub);
-			return true;
+			if (prims.contains(sup)) {
+				cacheSupercOf(sup, sub);
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			Set<OWLClass> sup_prims = getPrimitives(sup);
 			for (OWLClass sc : sup_prims) {
@@ -577,55 +581,6 @@ public class CuratorBuilder implements TaxonomyBuilder {
 		
 		return result;
 		
-		
-	}
-	
-	private boolean glb_subsumes_p(OWLClass sup, OWLClass sub, Set<OWLClass> prims, List<OWLObjectSomeValuesFrom> roles_sub) {
-		
-		if (isPrim(sup)) {
-			if (prims.contains(sup)) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			Set<OWLClass> sup_prims = getPrimitives(sup);
-			for (OWLClass sc : sup_prims) {
-				if (!prims.contains(sc))
-					return false;					
-			}
-		}
-		
-		boolean result = true;		
-		
-		if (result) {
-
-			List<OWLObjectSomeValuesFrom> roles_sup = kb.getRoles(sup);
-
-			if (!roles_sup.isEmpty() && roles_sub.isEmpty()) {
-				return isStatedSuperc(sub, sup);
-			}
-
-			for (OWLObjectSomeValuesFrom rol_sup : roles_sup) {
-				boolean check = false;
-				for (OWLObjectSomeValuesFrom rol_sub : roles_sub) {
-					if (role_subsumes_p(rol_sup, rol_sub)) {
-						check = true;
-						break;					
-					}
-				}
-				if (check) {
-
-				} else {
-					// couldn't find a subsumer for a role we are done here
-					result = false;
-					break;
-				}
-
-			}
-		}
-		
-		return result;		
 		
 	}
 	
