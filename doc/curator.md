@@ -14,7 +14,7 @@ So we view this classifier as more of a curator than a classifier.
 
 ## Overview of Curator algorithms
 
-The approach is based on structural comparison of terms and graph walking on the ontology.This is quite different from the tableaux method used by Pellet, which involves building models.
+xcThe approach is based on structural comparison of terms and graph walking on the ontology.This is quite different from the tableaux method used by Pellet, which involves building models.
 
 The basic idea is to view the ontology as one large graph where the connections are given by the subsumption relation. Subsumption is an ordering relation, we say `A subsume B` and mean that `A > B` in the ordering. When a new class is introduced, classification is the process of determining where in the ordering to place it, .ie. which classes `subsume` the new class and which are `subsumed`
 

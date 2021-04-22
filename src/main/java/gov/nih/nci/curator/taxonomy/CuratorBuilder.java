@@ -563,7 +563,7 @@ public class CuratorBuilder implements TaxonomyBuilder {
 			for (OWLObjectSomeValuesFrom rol_sup : roles_sup) {
 				boolean check = false;
 				for (OWLObjectSomeValuesFrom rol_sub : roles_sub) {
-						if (role_subsumes_p(rol_sup, rol_sub)) {
+						if (role_subsumes_p(sup, rol_sup, sub, rol_sub)) {
 							check = true;
 							break;					
 						}
@@ -584,10 +584,42 @@ public class CuratorBuilder implements TaxonomyBuilder {
 		
 	}
 	
-	private boolean role_subsumes_p(OWLObjectSomeValuesFrom sup, OWLObjectSomeValuesFrom sub) {
+	private boolean role_subsumes_p(OWLClass supcon, OWLObjectSomeValuesFrom sup, OWLClass subcon, OWLObjectSomeValuesFrom sub) {
 		if (sup.getProperty().equals(sub.getProperty())) {
+			OWLClass range = kb.getRange(sup.getProperty().asOWLObjectProperty());
+			
+			if (range == null) {
+				return false;
+			}
+			
+			
 			OWLClass subc = sub.getFiller().asOWLClass();
 			OWLClass supc = sup.getFiller().asOWLClass();
+			
+			boolean bad_dom = false;
+			String role_name = sup.getProperty().asOWLObjectProperty().getIRI().getFragment();
+			
+			OWLClass supc_dom = (OWLClass) statedTaxonomy.getDatum(supc, "domain");
+			if (!(supc_dom.equals(range) || isSupercOf(range, supc))) {
+				log.info("Role " + role_name + " has Bad filler " + supc.getIRI().getFragment() +
+						" on class " + supcon.getIRI().getFragment() + " is not of domain " +
+						range.getIRI().getFragment());
+						;
+				bad_dom = true;
+			}
+			
+			OWLClass subc_dom = (OWLClass) statedTaxonomy.getDatum(subc, "domain");
+			if (!(subc_dom.equals(range) || isSupercOf(range, subc))) {
+				log.info("Role " + role_name + " has Bad filler " + subc.getIRI().getFragment() +
+						" on class " + subcon.getIRI().getFragment() + " is not of domain " +
+						range.getIRI().getFragment());
+				bad_dom = true;
+			}
+			
+			if (bad_dom) {
+				return false;
+			}
+			
 			if (taxonomy.contains(subc) &&
 					taxonomy.contains(supc)) {
 				return isSupercOf(supc, subc);
