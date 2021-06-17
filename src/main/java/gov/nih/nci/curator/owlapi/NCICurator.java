@@ -77,6 +77,11 @@ public class NCICurator extends AbstractOWLListeningReasoner {
 		
 	}
 	
+	public Map<OWLClass, Set<OWLAxiom>> getBadRoles() {
+		return kb.getBadRoles();
+		
+	}
+	
 	private static Version createVersion() {
 		String versionString = VersionInfo.getInstance().getVersionString();
 		String[] versionNumbers = versionString.split( "\\." );

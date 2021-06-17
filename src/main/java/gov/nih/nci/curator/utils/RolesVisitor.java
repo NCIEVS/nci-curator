@@ -26,6 +26,9 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gov.nih.nci.curator.owlapi.KnowledgeBase;
+import gov.nih.nci.curator.taxonomy.Taxonomy;
+
 
 public class RolesVisitor implements OWLClassExpressionVisitor {
 	private OWLClass cls = null;
@@ -37,22 +40,32 @@ public class RolesVisitor implements OWLClassExpressionVisitor {
 	
 	public boolean errors = false;
 	
+	public boolean stated_errors = false;
+	
 	private static final Logger log = LoggerFactory.getLogger(RolesVisitor.class);
 
 	public List<OWLObjectSomeValuesFrom> roles = new ArrayList<OWLObjectSomeValuesFrom>();
 	
 	private List<OWLClass> visited = new ArrayList<OWLClass>();
 	
+	private Taxonomy<OWLClass> statedTaxonomy = null;
+	
+	private KnowledgeBase kb = null;
+	
 	public Set<OWLAxiom> bad_constructs = new HashSet<OWLAxiom>();
+	public Set<OWLAxiom> bad_roles = new HashSet<OWLAxiom>();
+	
 	private OWLAxiom cur_ax = null;
 
-	public RolesVisitor(OWLClass entity, OWLOntology ontology) {
+	public RolesVisitor(OWLClass entity, OWLOntology ontology, KnowledgeBase kb) {
 		cls = entity;
 		ont = ontology;
+		this.kb = kb;
 	}
 	
-	public void setEntity(OWLClass e, boolean loc) {
+	public void setEntity(OWLClass e, boolean loc, Taxonomy<OWLClass> stated) {
 		this.cls = e;
+		this.statedTaxonomy = stated;
 		
 		roles = new ArrayList<OWLObjectSomeValuesFrom>();
 		visited = new ArrayList<OWLClass>();
@@ -62,7 +75,9 @@ public class RolesVisitor implements OWLClassExpressionVisitor {
 		//first = true;
 		
 		errors = false;
+		stated_errors = false;
 		bad_constructs = new HashSet<OWLAxiom>();
+		bad_roles = new HashSet<OWLAxiom>();
 		cur_ax = null;
 	}
 
@@ -115,16 +130,66 @@ public class RolesVisitor implements OWLClassExpressionVisitor {
 			
 		}
 	}
+	
+private boolean checkDomRan(OWLClass c, OWLObjectSomeValuesFrom role) {
+		
+		boolean good = true;
+		OWLClass range = kb.getRange(role.getProperty().asOWLObjectProperty());
+		OWLClass domain = kb.getDomain(role.getProperty().asOWLObjectProperty());
+		
+		String role_name = role.getProperty().asOWLObjectProperty().getIRI().getFragment();
+
+
+		OWLClass filler = role.getFiller().asOWLClass();
+
+		OWLClass c_typ = (OWLClass) statedTaxonomy.getDatum(c, "domain");
+		OWLClass filler_typ = (OWLClass) statedTaxonomy.getDatum(filler, "domain");
+		
+		OWLClass range_typ = null;
+		
+		if (range != null) {
+			range_typ = (OWLClass) statedTaxonomy.getDatum(range, "domain");
+		}
+		
+		if (!(c_typ.equals(domain) || (domain == null))) {
+			log.info("Role: " + role_name + " has domain " +
+					domain.getIRI().getFragment() + " and can't be used on class " + c.getIRI().getFragment());
+			good = false;
+		}
+		
+		if (!(filler_typ.equals(range_typ) || (range_typ == null))) {
+			log.info("Role: " + role_name + " has range " +
+					range.getIRI().getFragment() + " and can't be used with filler " + filler.getIRI().getFragment()
+					+ " on class: " + c.getIRI());
+			good = false;
+		}
+		
+		return good;
+		 			
+		 			
+	
+	}
 
 	
 
 	@Override
 	public void visit(@Nonnull OWLObjectSomeValuesFrom ce) {
 		if (!roles.contains(ce)) {
-			roles.add(ce);
+			if (statedTaxonomy != null) {
+				if (checkDomRan(cls, ce)) {
+					roles.add(ce);					
+				} else {
+					stated_errors = true;
+					bad_roles.add(cur_ax);
+					cur_ax = null;
+				}
+			} else {
+				roles.add(ce);
+			}			
 		}
-
 	}
+		
+		
 	
 	public void visit(OWLObjectComplementOf ce) {
 		processUnsupportedExp(ce);

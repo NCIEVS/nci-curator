@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
 //import gov.nih.nci.curator.taxonomy.CuratorBuilder;
 //import gov.nih.nci.curator.taxonomy.CuratorBuilder2;
 import gov.nih.nci.curator.taxonomy.CuratorBuilder;
+import gov.nih.nci.curator.taxonomy.Taxonomy;
 import gov.nih.nci.curator.taxonomy.TaxonomyBuilder;
 import gov.nih.nci.curator.utils.EquStatedVisitor;
 import gov.nih.nci.curator.utils.RolesVisitor;
@@ -89,14 +90,19 @@ public class KnowledgeBase {
 	
 	private HashMap<OWLClass, List<OWLObjectSomeValuesFrom>> role_map;
 	
-	private HashMap<OWLClass, List<OWLObjectSomeValuesFrom>> loc_role_map;
-	
 	private HashMap<OWLClass, Set<OWLAxiom>> bad_constructs;
+	
+	private HashMap<OWLClass, Set<OWLAxiom>> bad_roles;
 	
 	public Timers timers = new Timers();
 	
 	public Map<OWLClass, Set<OWLAxiom>> getBadConstructs() {
 		return bad_constructs;
+		
+	}
+	
+	public Map<OWLClass, Set<OWLAxiom>> getBadRoles() {
+		return bad_roles;
 		
 	}
 	
@@ -140,14 +146,15 @@ public class KnowledgeBase {
 		ont = o;
 		
 		visitor = new UsagesVisitor(null, ont);
-		roles_visitor = new RolesVisitor(null, ont);
+		roles_visitor = new RolesVisitor(null, ont, this);
 		eqv_visitor = new EquStatedVisitor(null, ont);
 		root_visitor = new RootVisitor(null, ont);
 		spar_visitor = new StatedParentVisitor(null, ont);
 		
 		role_map = new HashMap<OWLClass, List<OWLObjectSomeValuesFrom>>();		
-		loc_role_map = new HashMap<OWLClass, List<OWLObjectSomeValuesFrom>>();		
+		new HashMap<OWLClass, List<OWLObjectSomeValuesFrom>>();		
 		bad_constructs = new HashMap<OWLClass, Set<OWLAxiom>>();
+		bad_roles = new HashMap<OWLClass, Set<OWLAxiom>>();
 
 	}
 
@@ -163,8 +170,9 @@ public class KnowledgeBase {
 		role_errors = false;
 		
 		role_map = new HashMap<OWLClass, List<OWLObjectSomeValuesFrom>>();		
-		loc_role_map = new HashMap<OWLClass, List<OWLObjectSomeValuesFrom>>();		
+		new HashMap<OWLClass, List<OWLObjectSomeValuesFrom>>();		
 		bad_constructs = new HashMap<OWLClass, Set<OWLAxiom>>();
+		bad_roles = new HashMap<OWLClass, Set<OWLAxiom>>();
 	}
 
 	public void classify() {
@@ -350,7 +358,7 @@ public class KnowledgeBase {
 		if (role_map.containsKey(c)) {
 			return role_map.get(c);
 		} else {
-			roles_visitor.setEntity(c, false);
+			roles_visitor.setEntity(c, false, null);
 			c.accept(roles_visitor);
 			role_map.put(c, roles_visitor.roles);
 			if (roles_visitor.errors) {
@@ -362,15 +370,21 @@ public class KnowledgeBase {
 		}
 	}
 	
-	public List<OWLObjectSomeValuesFrom> getLocalRoles(OWLClass c) {
-		if (loc_role_map.containsKey(c)) {
-			return loc_role_map.get(c);
-		} else {
-			roles_visitor.setEntity(c, true);
+	public void checkLocalRoles(OWLClass c, Taxonomy<OWLClass> stated) {
+		
+			roles_visitor.setEntity(c, true, stated);
 			c.accept(roles_visitor);
-			loc_role_map.put(c, roles_visitor.roles);
-			return roles_visitor.roles;
-		}
+			if (roles_visitor.stated_errors) {
+				role_errors = true;
+				bad_roles.put(c, roles_visitor.bad_roles);
+				
+			};
+			if (roles_visitor.errors) {
+				role_errors = true;
+				bad_constructs.put(c, roles_visitor.bad_constructs);
+				
+			};
+			
 	}
 	
 	public Set<OWLClass> getStatedEquivParents(OWLClass c) {

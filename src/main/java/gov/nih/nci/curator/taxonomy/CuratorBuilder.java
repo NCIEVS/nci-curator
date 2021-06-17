@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,7 +176,15 @@ public class CuratorBuilder implements TaxonomyBuilder {
 			computeStatedInformation();
 			stopTimer(c_s_info);
 						
-		}		
+		}
+		
+		if (!prepared) {
+			monitor.setProgressTitle("Issues with role domains and ranges....");
+			monitor.taskFinished();
+			throw new InconsistentOntologyException("Issues with role domains and ranges");
+			
+			
+		}
 		
 		try {
 			Thread.sleep(500);
@@ -273,9 +282,21 @@ public class CuratorBuilder implements TaxonomyBuilder {
 
 		}
 		
-		prepared = true;
+		for (OWLClass c : all_cls) {
+			kb.checkLocalRoles(c, statedTaxonomy);
+			
+		}
+		
+		if (kb.getBadRoles().isEmpty()) {
+			prepared = true;
+		} else {
+			prepared = false;
+			
+		}	
 		
 	}
+	
+	
 	
 	
 	
