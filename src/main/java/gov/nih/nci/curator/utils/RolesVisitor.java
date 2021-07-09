@@ -97,10 +97,12 @@ public class RolesVisitor implements OWLClassExpressionVisitor {
 					exp.accept(this);				
 				}
 				for (OWLEquivalentClassesAxiom eax : ont.getEquivalentClassesAxioms(ce)) {
+					cur_ax = eax;
 					for (OWLClassExpression exp : eax.getClassExpressions()) {
 						if (exp.isOWLClass() && exp.asOWLClass().equals(ce)) {
 
 						} else {
+							
 							exp.accept(this);
 						}
 
@@ -143,21 +145,38 @@ private boolean checkDomRan(OWLClass c, OWLObjectSomeValuesFrom role) {
 		OWLClass filler = role.getFiller().asOWLClass();
 
 		OWLClass c_typ = (OWLClass) statedTaxonomy.getDatum(c, "domain");
+		
 		OWLClass filler_typ = (OWLClass) statedTaxonomy.getDatum(filler, "domain");
+		
+		OWLClass dom_typ = null;
+		
+		if (domain != null) {
+			dom_typ = (OWLClass) statedTaxonomy.getDatum(domain, "domain");
+		} else {
+			log.info("Role: " + role_name + " has no domain ");
+		}
+		
+		String dom_name = (domain == null) ? "no domain" : domain.getIRI().getFragment();
 		
 		OWLClass range_typ = null;
 		
 		if (range != null) {
 			range_typ = (OWLClass) statedTaxonomy.getDatum(range, "domain");
+		} else {
+			log.info("Role: " + role_name + " has no range ");
 		}
 		
-		if (!(c_typ.equals(domain) || (domain == null))) {
+		String ran_name = (range == null) ? "no range" : domain.getIRI().getFragment();
+		
+		if (!c_typ.equals(dom_typ) && (domain != null)) {
+			
+
 			log.info("Role: " + role_name + " has domain " +
-					domain.getIRI().getFragment() + " and can't be used on class " + c.getIRI().getFragment());
+					dom_name + " and can't be used on class " + c.getIRI().getFragment());
 			good = false;
 		}
 		
-		if (!(filler_typ.equals(range_typ) || (range_typ == null))) {
+		if (!filler_typ.equals(range_typ) && (range != null)) {
 			log.info("Role: " + role_name + " has range " +
 					range.getIRI().getFragment() + " and can't be used with filler " + filler.getIRI().getFragment()
 					+ " on class: " + c.getIRI());
