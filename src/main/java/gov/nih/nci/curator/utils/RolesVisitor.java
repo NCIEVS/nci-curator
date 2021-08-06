@@ -166,7 +166,7 @@ private boolean checkDomRan(OWLClass c, OWLObjectSomeValuesFrom role) {
 			log.info("Role: " + role_name + " has no range ");
 		}
 		
-		String ran_name = (range == null) ? "no range" : domain.getIRI().getFragment();
+		String ran_name = (range == null) ? "no range" : range.getIRI().getFragment();
 		
 		if (!c_typ.equals(dom_typ) && (domain != null)) {
 			
