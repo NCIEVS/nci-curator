@@ -8,6 +8,7 @@ package gov.nih.nci.curator.taxonomy;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,13 +26,19 @@ import gov.nih.nci.curator.owlapi.OWL;
  */
 public class ObjectPropertyDomainOrder extends TaxonomyBasedDefinitionOrder {
 	
+	
+	
+	
+	
 
 	public ObjectPropertyDomainOrder(KnowledgeBase kb, Comparator<OWLClass> comparator) {
 		super( kb, comparator );
+		
 	}
 	
 	@Override
 	protected void initialize() {
+		ignore_roots = new HashSet<OWLClass>();
 		Set<OWLObjectProperty> obj_props = kb.getObjectProperties();
 		definitionOrderTaxonomy = new Taxonomy<OWLClass>( null,
 				OWL.Thing, OWL.Nothing );
@@ -59,13 +66,20 @@ public class ObjectPropertyDomainOrder extends TaxonomyBasedDefinitionOrder {
 				super.addUses(dom, range);
 			}
 		}
+		
 		for (OWLClass r : kb.roots()) {
 			if (definitionOrderTaxonomy.contains(r)) {
 				
 			} else {
+				ignore_roots.add(r);
 				definitionOrderTaxonomy.addNode(r, false);
 			}
 		}
+		
+	
+		
+		
+		
 	}
 	
 	public List<OWLClass> getDefinitionOrder() {

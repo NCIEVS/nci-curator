@@ -26,6 +26,10 @@ import gov.nih.nci.curator.owlapi.OWL;
  */
 public class TaxonomyBasedDefinitionOrder extends AbstractDefinitionOrder {
 	protected Taxonomy<OWLClass> definitionOrderTaxonomy;
+	
+	protected Set<OWLClass> ignore_roots;
+	
+	public Set<OWLClass> getIgnoreRoots() { return ignore_roots ;}
 
 	public TaxonomyBasedDefinitionOrder(KnowledgeBase kb, Comparator<OWLClass> comparator) {
 		super( kb, comparator );

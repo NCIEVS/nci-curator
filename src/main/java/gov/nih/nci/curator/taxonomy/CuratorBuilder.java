@@ -550,7 +550,23 @@ public class CuratorBuilder implements TaxonomyBuilder {
 	}
 	
 	private boolean inheritsDisjointClasses(OWLClass c) {
-		return statedTaxonomy.getDatum(c, "multiple_domains") != null;		
+		if (statedTaxonomy.getDatum(c, "multiple_domains") != null) {
+
+			OWLClass mul_dom = (OWLClass) statedTaxonomy.getDatum(c, "multiple_domains");
+			OWLClass dom = (OWLClass) statedTaxonomy.getDatum(c, "domain");
+			if (dom_order.getIgnoreRoots().contains(dom) ||
+					dom_order.getIgnoreRoots().contains(mul_dom)) {
+				return false;
+			} else {
+				return true;
+			}
+					
+			
+			
+		}
+		return false;
+		
+		
 	}	
 	
 	private boolean subsumes_p(OWLClass sup, OWLClass sub, Set<OWLClass> prims, List<OWLObjectSomeValuesFrom> roles_sub) {
