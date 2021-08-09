@@ -78,15 +78,15 @@ public class CuratorPreferencesPanel extends OWLPreferencesPanel {
 		layoutPanel.addGroup("Curator Edit Checks");
 
         layoutPanel.addGroupComponent(getCheckBox(CuratorReasonerPreferences.OptionalEditChecksTask.CHECK_DISJOINT_CLASSES, 
-        		"Check Disjointness"));
+        		"Check Disjointness When Adding a Parent"));
         layoutPanel.addGroupComponent(getCheckBox(CuratorReasonerPreferences.OptionalEditChecksTask.CHECK_REDUNDANT_PARENT, 
         		"Check Redundant Parent"));
         layoutPanel.addGroupComponent(getCheckBox(CuratorReasonerPreferences.OptionalEditChecksTask.CHECK_UNSUPPORTED_CONSTRUCTS, 
         		"Check Unsupported Language Constructs"));
         layoutPanel.addGroupComponent(getCheckBox(CuratorReasonerPreferences.OptionalEditChecksTask.CHECK_SUBCLASS_FULL_DEFINED, 
-        		"Check Defined Class has no subclass"));
+        		"Check Defined Class Has No Asserted Subclass"));
         layoutPanel.addGroupComponent(getCheckBox(CuratorReasonerPreferences.OptionalEditChecksTask.CHECK_BAD_RETREE, 
-        		"Check retree to disjoint domain has no references"));
+        		"Check Some Dependencies When Retreeing to Disjoint Domains"));
 	}
 
 	private Border createTitledBorder(JPanel panel, String title) {
