@@ -505,12 +505,14 @@ public class IncrementalReasoner implements OWLReasoner {
 	 * {@inheritDoc}
 	 */
 	public Set<OWLSubClassOfAxiom> getAllInferredSuperClasses() {
-		//classify();
 
 		final OWLDataFactory factory = getManager().getOWLDataFactory();
 		
-			
-		return getInferredClasses(factory, taxonomy.getClasses());
+		if (taxonomy != null) {
+			return getInferredClasses(factory, taxonomy.getClasses());
+		} else {
+			return new HashSet<OWLSubClassOfAxiom>();
+		}
 	}
 	
 	
