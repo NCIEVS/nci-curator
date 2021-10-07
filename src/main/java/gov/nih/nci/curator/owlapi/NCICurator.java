@@ -35,6 +35,7 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.model.RemoveImport;
 import org.semanticweb.owlapi.model.RemoveOntologyAnnotation;
+import org.semanticweb.owlapi.model.ReplaceOntologyPrefixMappingChange;
 import org.semanticweb.owlapi.model.SetOntologyID;
 import org.semanticweb.owlapi.reasoner.AxiomNotInProfileException;
 import org.semanticweb.owlapi.reasoner.BufferingMode;
@@ -163,6 +164,12 @@ public class NCICurator extends AbstractOWLListeningReasoner {
 		}
 
 		public void visit(SetOntologyID change) {
+			
+		}
+
+		@Override
+		public void visit(ReplaceOntologyPrefixMappingChange change) {
+			// TODO Auto-generated method stub
 			
 		}
 
