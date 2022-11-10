@@ -26,11 +26,13 @@
 			<version>${protege.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>edu.stanford.protege</groupId>
 			<artifactId>explanation-workbench</artifactId>
 			<version>3.0.2-SNAPSHOT</version>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-jdk1.5</artifactId>

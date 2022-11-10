@@ -13,11 +13,12 @@
         <class value="gov.nih.nci.curator.CuratorPreferencesPanel"/>
     </extension>
 
-
+    <!--
     <extension id="CuratorExplanation"
                point="org.protege.editor.owl.explanation">
         <name value="Curator Explanation Service"/>
         <class value="gov.nih.nci.curator.CuratorExplanationService"/>
     </extension>
+    -->
     
 </plugin>
